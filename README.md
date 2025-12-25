@@ -1,78 +1,118 @@
-# 📝 Simple To-Do List Application (Python)
+import json
 
-##  Description
+def load_task():
+    try:
+        with open("tasks.json", "r") as task_file:
+            return json.load(task_file)
+    except FileNotFoundError:
+        return []
 
-This project is a **Simple To-Do List Application** developed using **Python** as part of my **internship at CodeSoft**. The application helps users manage and organize their daily tasks efficiently using a **menu-driven command-line interface (CLI)**.
 
-The project supports basic task management operations such as adding tasks, viewing tasks, marking tasks as completed, and deleting tasks. Task data is stored permanently using a **JSON file**, ensuring data persistence even after the program is closed.
+def save_task(tasks):
+    with open("tasks.json", "w") as task_file:
+        json.dump(tasks, task_file, indent=4)
 
----
 
-## ✨ Features
+def add_task(tasks):
+    task_name = input("Enter the task: ")
 
-* Add new tasks
-* View all tasks
-* Mark tasks as completed
-* Delete tasks
-* Persistent storage using JSON file
+    for task in tasks:
+        if task_name in task:
+            print(f"'{task_name}' already exists")
+            return
 
----
+    task = {task_name: "Pending"}
+    tasks.append(task)
+    save_task(tasks)
+    print("Your task is added successfully")
 
-##  Technologies Used
 
-* **Python**
-* **JSON** (for file-based data storage)
-* **Command Line Interface (CLI)**
+def view_task(tasks):
+    if len(tasks)==0:
+        print("No Task to do")
+    else:
+        print("\nYour Tasks:")
+        for i, t in enumerate(tasks, start=1):
+            for name, status in t.items():
+                print(f"{i}. {name} - {status}")
 
----
 
-##  Project Structure
+def mark_task(tasks):
+    if len(tasks)==0:
+        print("No Task to mark.")
+        return
 
-```
-├── TODOlist.py        # Main Python file
-├── tasks.json         # Stores tasks data
-├── README.md          # Project documentation
-```
+    view_task(tasks)
+    choice=int(input("Enter the task to mark as completed:"))
+    if 1<=choice<=len(tasks):
+        tasks[choice-1]["status"]="Completed"
+        print("Task marked as completed")
+    else:
+        print("Invalid task number")
+    with open("tasks.json","w") as task_file:
+        json.dump(tasks,task_file,indent=4)
 
----
 
-## ▶️ How to Run the Project
 
-1. Make sure Python is installed on your system.
-2. Clone this repository or download the files.
-3. Open a terminal in the project folder.
-4. Run the program using:
 
-   ```bash
-   python TODOlist.py
-   ```
+def delete_task(tasks):
+     with open("tasks.json", "r") as task_file:
+            tasks = json.load(task_file)
 
----
+     if len(tasks) == 0:
+            print("No task to delete.")
+            return
 
-##  Learning Outcomes
+     view_task(tasks)
 
-* Gained hands-on experience with Python programming
-* Learned file handling using JSON
-* Understood CRUD operations (Create, Read, Update, Delete)
-* Built a complete mini-project during internship
+     choice = int(input("Enter the task number to delete: "))
 
----
+     if 1 <= choice <= len(tasks):
+            del tasks[choice - 1]
+            save_tasks(tasks)
+            print("Your task is deleted successfully")
+     else:
+            print("Invalid task number")
+     save_task(tasks)
 
-##  Internship Details
 
-* **Internship Provider:** CodeSoft
-* **Domain:** Python Development
-* **Project Type:** Mini Project
 
----
+def main():
+    tasks = load_task()
+    print("Here is your TO-DO list")
 
-##  Author
+    while True:
+        print("\n" + "*" * 50)
+        print("                      TO-DO LIST                         ")
+        print("*" * 50)
+        print("1. Add your task")
+        print("2. View your task")
+        print("3. Mark done")
+        print("4. Delete task")
+        print("5. Quit")
+        print("*" * 50)
 
-**Elakkiya**
+        try:
+            choice = int(input("Enter your choice: "))
+            match choice:
+                case 1:
+                    add_task(tasks)
+                case 2:
+                    view_task(tasks)
+                case 3:
+                    mark_task(tasks)
+                case 4:
+                    delete_task(tasks)
+                case 5:
+                    print("Thank you byee...!")
+                    break
+                case _:
+                    print("Invalid choice! Try 1-5.")
+        except ValueError:
+            print("Please enter a number (1-5)!")
 
----
 
-##  License
+if __name__ == "__main__":
+ main()
 
-This project is for learning and educational purposes.
 
